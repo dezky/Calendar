@@ -11,12 +11,15 @@ const getLastSaturday = (month, year) => {
 }
 
 const getMonth = (month, year) => {
+  const actualMonth = moment().set({month, year}).format('MMMM')
   const firstDayOfMonth = getFirstSunday(month, year)
   const lastDayOfMonth = getLastSaturday(month, year)
   let days = []
+  let index = 0
 
-  while (lastDayOfMonth.diff(firstDayOfMonth, 'days') >= 0) {
+  while (lastDayOfMonth.isSameOrAfter(firstDayOfMonth)) {
     const day = {
+      index,
       inMonth: firstDayOfMonth.get('month') === month,
       number: parseInt(firstDayOfMonth.format('DD'), 10),
       reminders: [],
@@ -25,11 +28,15 @@ const getMonth = (month, year) => {
 
     days.push(day)
     firstDayOfMonth.add(1, 'd')
+    index++
   }
 
   return {
     type: GET_MONTH,
-    payload: days
+    payload: {
+      name: actualMonth,
+      days
+    }
   }
 }
 
