@@ -1,7 +1,14 @@
-import React from 'react';
+import React from 'react'
+
+import { Month } from 'components/containers'
 
 function App() {
-  return <h1>Hello world</h1>
+  return (
+    <React.Fragment>
+      <h1>Hello world</h1>
+      <Month />
+    </React.Fragment>
+  )
 }
 
 export default App;
