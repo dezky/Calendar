@@ -29,7 +29,7 @@ const Row = styled.div`
   display: flex;
 `
 const HeaderItem = styled.div`
-  width: 150px;
+  width: 200px;
   background-color: #2e73b4;
   color: #fff;
   text-align: center;
@@ -37,6 +37,20 @@ const HeaderItem = styled.div`
   border-right: 1px solid #2e73b4;
   border-left: ${({ position }) => getBorderLeftHeader(position)};
 `
+const Button = styled.button`
+  margin: 5px 0;
+  border-radius: 5px;
+  padding: 10px 5px;
+  border: none;
+  color: #fff;
+  background-color: #2e73b4;
+  outline: none;
+
+  &:hover {
+    cursor: pointer;
+  }
+`
+
 const renderRowOfDays = (days, firstRow) => {
   return days.map((day, index) => {
     return <Day key={`day-${index}`} day={day} firstRow={firstRow}/>
@@ -65,6 +79,7 @@ const Month = ({ month }) => {
   return (
     <Wrapper>
       <h1>{name}</h1>
+      <Button>New reminder</Button>
       <Row>{renderHeader()}</Row>
       {renderDays(days)}
     </Wrapper>
