@@ -2,8 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { chunk } from 'lodash'
+import Modal from 'react-modal'
 
 import { Day } from './day'
+import { NewReminderComponent } from './newReminder'
 
 const getBorderLeftHeader = position => {
   if (position === 0) {
@@ -50,41 +52,89 @@ const Button = styled.button`
     cursor: pointer;
   }
 `
-
-const renderRowOfDays = (days, firstRow) => {
-  return days.map((day, index) => {
-    return <Day key={`day-${index}`} day={day} firstRow={firstRow}/>
-  })
-}
-const renderDays = days => {
-  const rows = chunk(days, 7)
-  return rows.map((row, index) => {
-    const firstRow = index === 0
-    return <Row key={`row-${index}`}>{renderRowOfDays(row, firstRow)}</Row>
-  })
-}
-const renderHeader = () => {
-  return daysOfWeek.map((name, index) => {
-    return <HeaderItem key={`header-${index}`} position={index}>{name}</HeaderItem>
-  })
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
 }
 
-const Month = ({ month }) => {
-  const { name, days } = month
+Modal.setAppElement('#root');
 
-  if (!days) {
-    return null
+class Month extends React.Component {
+  static propTypes = {
+    month: PropTypes.object.isRequired
   }
 
-  return (
-    <Wrapper>
-      <h1>{name}</h1>
-      <Button>New reminder</Button>
-      <Row>{renderHeader()}</Row>
-      {renderDays(days)}
-    </Wrapper>
-  )
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      showNewReminder: false
+    }
+  }
+
+  handleOpenModal = () => {
+    this.setState({ showNewReminder: true });
+  }
+
+  handleCloseModal = () => {
+    this.setState({ showNewReminder: false });
+  }
+
+  renderRowOfDays = (days, firstRow) => {
+    return days.map((day, index) => {
+      return <Day key={`day-${index}`} day={day} firstRow={firstRow}/>
+    })
+  }
+
+  renderDays = days => {
+    const rows = chunk(days, 7)
+    return rows.map((row, index) => {
+      const firstRow = index === 0
+      return <Row key={`row-${index}`}>{this.renderRowOfDays(row, firstRow)}</Row>
+    })
+  }
+
+  renderHeader = () => {
+    return daysOfWeek.map((name, index) => {
+      return <HeaderItem key={`header-${index}`} position={index}>{name}</HeaderItem>
+    })
+  }
+
+  render() {
+    const { name, days } = this.props.month
+    const reminderProps = {
+      cancelCallback: this.handleCloseModal,
+      okCallback: this.handleCloseModal
+    }
+
+    if (!days) {
+      return null
+    }
+
+    return (
+      <Wrapper>
+        <h1>{name}</h1>
+        <Button onClick={this.handleOpenModal}>New reminder</Button>
+        <Modal
+          isOpen={this.state.showNewReminder}
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          <NewReminderComponent {...reminderProps} />
+        </Modal>
+        <Row>{this.renderHeader()}</Row>
+        {this.renderDays(days)}
+      </Wrapper>
+    )
+  }
 }
+
 
 Month.propTypes = {
   month: PropTypes.object.isRequired
