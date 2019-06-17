@@ -86,6 +86,13 @@ class Month extends React.Component {
     this.setState({ showNewReminder: false });
   }
 
+  addReminderFn = (day, reminder) => {
+    const { addReminder } = this.props
+
+    addReminder(day, reminder)
+    this.handleCloseModal()
+  }
+
   renderRowOfDays = (days, firstRow) => {
     return days.map((day, index) => {
       return <Day key={`day-${index}`} day={day} firstRow={firstRow}/>
@@ -110,7 +117,7 @@ class Month extends React.Component {
     const { name, days } = this.props.month
     const reminderProps = {
       cancelCallback: this.handleCloseModal,
-      okCallback: this.handleCloseModal
+      okCallback: this.addReminderFn
     }
 
     if (!days) {
@@ -137,7 +144,8 @@ class Month extends React.Component {
 
 
 Month.propTypes = {
-  month: PropTypes.object.isRequired
+  month: PropTypes.object.isRequired,
+  addReminder: PropTypes.func.isRequired
 }
 
 export {

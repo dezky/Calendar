@@ -140,8 +140,15 @@ class NewReminderComponent extends React.Component {
     this.setState({ color: color.hex })
   }
 
+  onClickOkButton = () => {
+    const { okCallback } = this.props
+    const { day, error, ...reminder } = this.state
+
+    okCallback(parseInt(day, 10), reminder)
+  }
+
   render() {
-    const { cancelCallback, okCallback, reminder } = this.props
+    const { cancelCallback, reminder } = this.props
     const { day, hour, minute, text, city, color, error } = this.state
     const title = reminder.id ? 'Edit reminder' : 'New Reminder'
 
@@ -177,7 +184,7 @@ class NewReminderComponent extends React.Component {
           />
         </Row>
         <RowButton>
-          <Button onClick={() => console.log(this.state)}>Add</Button>
+          <Button onClick={this.onClickOkButton}>Add</Button>
           <Button onClick={cancelCallback}>Cancel</Button>
         </RowButton>
       </Wrapper>

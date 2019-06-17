@@ -22,9 +22,7 @@ const getMonth = (month, year) => {
       index,
       inMonth: firstDayOfMonth.get('month') === month,
       number: parseInt(firstDayOfMonth.format('DD'), 10),
-      reminders: [{id: 1542, hour: 9, minute: 45, text: 'hola mundo como te va', city: 'Bahia Blanca', color: '#F00'},
-      {id: 1543, hour: 9, minute: 45, text: 'Seguro', city: 'Bahia Blanca', color: '#0F0'},
-      {id: 1534, hour: 9, minute: 45, text: 'Seguro', city: 'Bahia Blanca', color: ''}],
+      reminders: [],
       dayOfWeek: firstDayOfMonth.day()
     }
 

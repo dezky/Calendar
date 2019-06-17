@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { getMonth } from 'actions'
+import { getMonth, addReminder } from 'actions'
 import { Month as Presentation } from 'components/presentation'
 
 class MonthContainer extends React.Component {
@@ -11,9 +11,9 @@ class MonthContainer extends React.Component {
   }
 
   render() {
-    const { month } = this.props
+    const { month, addReminder } = this.props
 
-    return <Presentation month={month} />
+    return <Presentation month={month} addReminder={addReminder} />
   }
 }
 
@@ -23,7 +23,7 @@ function mapStateToProps(state) {
   }
 }
 
-const Month = connect(mapStateToProps, { getMonth })(MonthContainer)
+const Month = connect(mapStateToProps, { getMonth, addReminder })(MonthContainer)
 
 export {
   Month
