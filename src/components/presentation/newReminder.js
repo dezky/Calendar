@@ -65,9 +65,10 @@ class NewReminderComponent extends React.Component {
   constructor(props) {
     super(props)
 
-    const { hour, minute, text, city, color } = props.reminder
+    const { hour, minute, text, city, color, id } = props.reminder
     this.state = {
       day: props.day,
+      id: id ? id : 0,
       hour: hour ? hour : 0,
       minute: minute ? minute : 0,
       text: text ? text : '',
@@ -144,6 +145,10 @@ class NewReminderComponent extends React.Component {
     const { okCallback } = this.props
     const { day, error, ...reminder } = this.state
 
+    if (reminder.id === 0) {
+      reminder.id = Date.now()
+    }
+
     okCallback(parseInt(day, 10), reminder)
   }
 
@@ -184,7 +189,7 @@ class NewReminderComponent extends React.Component {
           />
         </Row>
         <RowButton>
-          <Button onClick={this.onClickOkButton}>Add</Button>
+          <Button onClick={this.onClickOkButton}>Save</Button>
           <Button onClick={cancelCallback}>Cancel</Button>
         </RowButton>
       </Wrapper>

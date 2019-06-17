@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { chunk } from 'lodash'
 import Modal from 'react-modal'
 
-import { Day } from './day'
+import { Day } from 'components/containers'
 import { NewReminderComponent } from './newReminder'
 
 const getBorderLeftHeader = position => {
@@ -63,7 +63,7 @@ const customStyles = {
   }
 }
 
-Modal.setAppElement('#root');
+Modal.setAppElement('#root')
 
 class Month extends React.Component {
   static propTypes = {

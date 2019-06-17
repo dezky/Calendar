@@ -35,10 +35,10 @@ const FirstLine = styled(WrapperText)`
 `
 const SecondLine = styled(WrapperText)`
 `
-const Reminder = ({ reminder }) => {
+const Reminder = ({ reminder, ...rest }) => {
   const { text, hour, minute, city, color } = reminder
   return (
-    <Wrapper color={color}>
+    <Wrapper color={color} {...rest}>
       <FirstLine>{text}</FirstLine>
       <SecondLine>{hour}:{minute} - {city}</SecondLine>
     </Wrapper>
