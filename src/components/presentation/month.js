@@ -46,6 +46,7 @@ const Button = styled.button`
   border: none;
   color: #fff;
   background-color: #2e73b4;
+  font-family: 'Montserrat', sans-serif;
   outline: none;
 
   &:hover {

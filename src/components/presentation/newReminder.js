@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { CompactPicker } from 'react-color'
 
 const Wrapper = styled.div`
+  min-width: 380px;
   .flexbox-fix {
     display: none !important;
   }
@@ -14,6 +15,10 @@ const Title = styled.h1`
 const Row = styled.div`
   margin: 10px;
   font-size: 1.5rem;
+`
+const RowExpanded = styled(Row)`
+  display: flex;
+  align-items: center;
 `
 const RowButton = styled(Row)`
   text-align: center;
@@ -36,12 +41,12 @@ const Error = styled.p`
   display: ${({ show }) => show ? 'block' : 'none'};
 `
 const Button = styled.button`
-  margin: 5px 0;
   border-radius: 5px;
   padding: 10px 5px;
   border: none;
   color: #fff;
   background-color: #2e73b4;
+  font-family: 'Montserrat', sans-serif;
   outline: none;
   width: 90px;
   font-size: 1.3rem;
@@ -189,15 +194,15 @@ class NewReminderComponent extends React.Component {
           <Error show={error.hour}>Incorrect hour</Error>
           <Error show={error.minute}>Incorrect minute</Error>
         </Row>
-        <Row>
+        <RowExpanded>
           <Label htmlFor='text'>Text:</Label>
-          <Input id='text' type='text' value={text} onChange={ this.onChangeText } maxLength={30}/>
+          <Input id='text' type='text' value={text} onChange={ this.onChangeText } maxLength={30} style={{ flexGrow: 2}}/>
           <Error show={error.text}>Max lenght 30 chars</Error>
-        </Row>
-        <Row>
+        </RowExpanded>
+        <RowExpanded>
           <Label htmlFor='city'>City:</Label>
-          <Input id='city' type='text' value={city} onChange={ this.onChangeCity }/>
-        </Row>
+          <Input id='city' type='text' value={city} onChange={ this.onChangeCity } style={{ flexGrow: 2}}/>
+        </RowExpanded>
         <Row style={{textAlign: 'center'}}>
           <CompactPicker
             color={color}
