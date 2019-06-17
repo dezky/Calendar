@@ -69,7 +69,8 @@ class Day extends React.Component {
   static propTypes = {
     firstRow: PropTypes.bool,
     day: PropTypes.object.isRequired,
-    updateReminder: PropTypes.func.isRequired
+    updateReminder: PropTypes.func.isRequired,
+    deleteReminder: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -100,6 +101,13 @@ class Day extends React.Component {
     this.handleCloseModal()
   }
 
+  deleteReminderFn = id => {
+    const { deleteReminder, day } = this.props
+
+    deleteReminder(day.index, id)
+    this.handleCloseModal()
+  }
+
   renderReminders = (reminders) => {
     return reminders.map(reminder => {
       const onClick = () => this.handleOpenModal(reminder)
@@ -115,7 +123,8 @@ class Day extends React.Component {
       day: number,
       cancelCallback: this.handleCloseModal,
       okCallback: this.updateReminderFn,
-      reminder: selectedReminder
+      reminder: selectedReminder,
+      deleteCallback: this.deleteReminderFn
     }
 
     return (

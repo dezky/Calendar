@@ -47,6 +47,10 @@ const Button = styled.button`
   }
 `
 
+const DeleteButton = styled(Button)`
+  background-color: #dc3545;
+`
+
 class NewReminderComponent extends React.Component {
   static propTypes = {
     day: PropTypes.number,
@@ -152,10 +156,17 @@ class NewReminderComponent extends React.Component {
     okCallback(parseInt(day, 10), reminder)
   }
 
+  onClickDeleteButton = () => {
+    const { deleteCallback } = this.props
+
+    deleteCallback(this.state.id)
+  }
+
   render() {
     const { cancelCallback, reminder } = this.props
     const { day, hour, minute, text, city, color, error } = this.state
-    const title = reminder.id ? 'Edit reminder' : 'New Reminder'
+    const title = reminder.id > 0 ? 'Edit reminder' : 'New Reminder'
+    const showDeleteButton = reminder.id > 0
 
     return (
       <Wrapper>
@@ -190,6 +201,7 @@ class NewReminderComponent extends React.Component {
         </Row>
         <RowButton>
           <Button onClick={this.onClickOkButton}>Save</Button>
+          { showDeleteButton && <DeleteButton onClick={this.onClickDeleteButton}>Delete</DeleteButton>}
           <Button onClick={cancelCallback}>Cancel</Button>
         </RowButton>
       </Wrapper>

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import { updateReminder } from 'actions'
+import { updateReminder, deleteReminder } from 'actions'
 import { Day as Presentation } from 'components/presentation'
 
 class DayContainer extends React.Component {
@@ -26,7 +26,7 @@ function mapStateToProps(state) {
   }
 }
 
-const Day = connect(mapStateToProps, { updateReminder })(DayContainer)
+const Day = connect(mapStateToProps, { updateReminder, deleteReminder })(DayContainer)
 
 export {
   Day
