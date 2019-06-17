@@ -27,8 +27,10 @@ const addReminder = (state, action) => {
   const { day, reminder } = action.payload
   const { days } = state
   const idx = days.findIndex(data => data.number === day && data.inMonth)
+  const reminders = days[idx].reminders
 
-  days[idx].reminders.push(reminder)
+  reminders.push(reminder)
+  days[idx].reminders = reminders.sort(compareReminder)
 
   return {
     ...state,
@@ -62,6 +64,25 @@ const deleteAllReminders = (state, action) => {
   days[dayIndex].reminders = []
 
   return {...state, days}
+}
+
+const compareReminder = (rem1, rem2) => {
+  if (rem1.hour < rem2.hour) {
+    return -1
+  }
+  if (rem2.hour < rem1.hour) {
+    return 1
+  }
+  if (rem1.hour === rem2.hour) {
+    if (rem1.minute < rem2.minute) {
+      return -1
+    } else if (rem2.minute < rem1.minute) {
+      return 1
+    }
+  }
+
+
+  return 0;
 }
 
 export {

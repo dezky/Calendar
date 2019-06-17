@@ -33,14 +33,22 @@ const WrapperText = styled.p`
 const FirstLine = styled(WrapperText)`
   font-weight: bold;
 `
-const SecondLine = styled(WrapperText)`
-`
+const formatTime = value => {
+  const valueNmb = parseInt(value, 10)
+
+  if (valueNmb < 10) {
+    return `0${valueNmb}`
+  }
+
+  return value
+}
+
 const Reminder = ({ reminder, ...rest }) => {
   const { text, hour, minute, city, color } = reminder
   return (
     <Wrapper color={color} {...rest}>
       <FirstLine>{text}</FirstLine>
-      <SecondLine>{hour}:{minute} - {city}</SecondLine>
+      <WrapperText>{formatTime(hour)}:{formatTime(minute)} - {city}</WrapperText>
     </Wrapper>
   )
 }

@@ -1,10 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { SketchPicker } from 'react-color'
+import { CompactPicker } from 'react-color'
 
 const Wrapper = styled.div`
-
+  .flexbox-fix {
+    display: none !important;
+  }
 `
 const Title = styled.h1`
   text-align: center;
@@ -17,13 +19,16 @@ const RowButton = styled(Row)`
   text-align: center;
 `
 const Label = styled.label`
-  margin-right: 5px
+  margin-right: 5px;
+  display: inline-block;
+  width: 65px;
 `
 const Input = styled.input`
   border: 1px solid #B3A2A2;
   padding: 10px 5px;
   border-radius: 5px;
   font-size: 1.2rem;
+  outline: none;
 `
 const Error = styled.p`
   margin: 0;
@@ -193,8 +198,8 @@ class NewReminderComponent extends React.Component {
           <Label htmlFor='city'>City:</Label>
           <Input id='city' type='text' value={city} onChange={ this.onChangeCity }/>
         </Row>
-        <Row>
-          <SketchPicker
+        <Row style={{textAlign: 'center'}}>
+          <CompactPicker
             color={color}
             onChangeComplete={ this.onChangeColor }
           />
