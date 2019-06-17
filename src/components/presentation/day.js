@@ -2,6 +2,8 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import Modal from 'react-modal'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
 import { Reminder } from './reminder'
 import { NewReminderComponent } from './newReminder'
@@ -52,6 +54,14 @@ const Number = styled.div`
 const WrapperReminders = styled.ul`
   padding: 0 5px;
 `
+const TrashButton = styled(FontAwesomeIcon)`
+  float: right;
+  margin: 5px 5px;
+
+  &:hover {
+    cursor: pointer;
+  }
+`
 const customStyles = {
   content : {
     top                   : '50%',
@@ -70,7 +80,8 @@ class Day extends React.Component {
     firstRow: PropTypes.bool,
     day: PropTypes.object.isRequired,
     updateReminder: PropTypes.func.isRequired,
-    deleteReminder: PropTypes.func.isRequired
+    deleteReminder: PropTypes.func.isRequired,
+    deleteAllReminders: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -108,6 +119,13 @@ class Day extends React.Component {
     this.handleCloseModal()
   }
 
+  deleteAllRemindersFn = () => {
+    const { deleteAllReminders, day } = this.props
+
+    deleteAllReminders(day.index)
+    this.handleCloseModal()
+  }
+
   renderReminders = (reminders) => {
     return reminders.map(reminder => {
       const onClick = () => this.handleOpenModal(reminder)
@@ -129,6 +147,7 @@ class Day extends React.Component {
 
     return (
       <Wrapper dayOfWeek={dayOfWeek} firstRow={firstRow}>
+        {reminders.length > 0 && <TrashButton icon={faTrashAlt} onClick={this.deleteAllRemindersFn} />}
         <Number>{number}</Number>
         <WrapperReminders>{this.renderReminders(reminders)}</WrapperReminders>
         <Modal

@@ -1,6 +1,5 @@
-import { GET_MONTH, ADD_REMINDER, UPDATE_REMINDER, DELETE_REMINDER } from 'actions/types'
+import { GET_MONTH, ADD_REMINDER, UPDATE_REMINDER, DELETE_REMINDER, DELETE_ALL_REMINDERS } from 'actions/types'
 import defaultState from './defaultState'
-
 
 const month = (state = defaultState.month, action) => {
   switch(action.type) {
@@ -15,6 +14,9 @@ const month = (state = defaultState.month, action) => {
     }
     case DELETE_REMINDER: {
       return deleteReminder(state, action)
+    }
+    case DELETE_ALL_REMINDERS: {
+      return deleteAllReminders(state, action)
     }
     default:
       return state
@@ -50,6 +52,14 @@ const deleteReminder = (state, action) => {
   let reminders = days[dayIndex].reminders
 
   days[dayIndex].reminders = reminders.filter(data => data.id !== id)
+
+  return {...state, days}
+}
+
+const deleteAllReminders = (state, action) => {
+  const dayIndex = action.payload
+  const { days } = state
+  days[dayIndex].reminders = []
 
   return {...state, days}
 }
