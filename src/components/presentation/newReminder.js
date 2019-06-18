@@ -35,11 +35,6 @@ const Input = styled.input`
   font-size: 1.2rem;
   outline: none;
 `
-const Error = styled.p`
-  margin: 0;
-  color: #f00;
-  display: ${({ show }) => show ? 'block' : 'none'};
-`
 const Button = styled.button`
   border-radius: 5px;
   padding: 10px 5px;
@@ -88,52 +83,12 @@ class NewReminderComponent extends React.Component {
       text: text ? text : '',
       city: city ? city : '',
       zipCode: zipCode ? zipCode : '',
-      color: color ? color : '',
-      error: {
-        day: false,
-        hour: false,
-        minute: false,
-        text: false
-      }
+      color: color ? color : ''
     }
-  }
-
-  checkErrors = () => {
-    const { day, hour, minute, text } = this.state
-    const error = {}
-
-    if (!day || day > 31 || day < 1) {
-      error.day = true
-    } else {
-      error.day = false
-    }
-
-    if (hour.length === 0 || hour < 0 || hour > 23) {
-      error.hour = true
-    } else {
-      error.day = false
-    }
-
-    if (minute.length === 0 || minute < 0 || minute > 59) {
-      error.minute = true
-    } else {
-      error.minute = false
-    }
-
-    if (text.length > 30) {
-      error.text = true
-    } else {
-      error.text = false
-    }
-
-    this.setState({error})
-
   }
 
   onChangeDay = evt => {
-    this.setState({day : evt.target.value }, () => {
-      this.checkErrors()
-    })
+    this.setState({day : evt.target.value })
   }
 
   onChangeHour = evt => {
@@ -162,7 +117,7 @@ class NewReminderComponent extends React.Component {
 
   onClickOkButton = () => {
     const { okCallback } = this.props
-    const { day, error, ...reminder } = this.state
+    const { day, ...reminder } = this.state
 
     if (reminder.id === 0) {
       reminder.id = Date.now()
@@ -179,7 +134,7 @@ class NewReminderComponent extends React.Component {
 
   render() {
     const { cancelCallback, reminder } = this.props
-    const { day, hour, minute, text, city, color, zipCode, error } = this.state
+    const { day, hour, minute, text, city, color, zipCode } = this.state
     const title = reminder.id > 0 ? 'Edit reminder' : 'New Reminder'
     const showDeleteButton = reminder.id > 0
 
@@ -189,20 +144,16 @@ class NewReminderComponent extends React.Component {
         <Row>
           <Label htmlFor='day'>Day:</Label>
           <Input id= 'day' type='number' value={day} onChange={ this.onChangeDay } min={1} max={31}/>
-          <Error show={error.day}>Incorrect day</Error>
         </Row>
         <Row>
           <Label htmlFor='hour'>Time:</Label>
           <Input id='hour' type='number' value={hour} onChange={ this.onChangeHour } min={0} max={23}/>
           <span> : </span>
           <Input type='number' value={minute} onChange={ this.onChangeMinute } min={0} max={59}/>
-          <Error show={error.hour}>Incorrect hour</Error>
-          <Error show={error.minute}>Incorrect minute</Error>
         </Row>
         <RowExpanded>
           <Label htmlFor='text'>Text:</Label>
           <Input id='text' type='text' value={text} onChange={ this.onChangeText } maxLength={30} style={{ flexGrow: 1}}/>
-          <Error show={error.text}>Max lenght 30 chars</Error>
         </RowExpanded>
         <RowExpanded>
           <Label htmlFor='city'>City:</Label>

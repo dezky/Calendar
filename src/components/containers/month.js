@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import moment from 'moment'
 
 import { getMonth, addReminder, getWeather } from 'actions'
 import { Month as Presentation } from 'components/presentation'
@@ -7,7 +8,8 @@ import { Month as Presentation } from 'components/presentation'
 class MonthContainer extends React.Component {
 
   componentDidMount() {
-    this.props.getMonth(2, 2019)
+    const today = moment()
+    this.props.getMonth(today.month(), today.year())
   }
 
   render() {
