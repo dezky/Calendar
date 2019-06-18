@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import Modal from 'react-modal'
+import moment from 'moment'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
@@ -81,7 +82,9 @@ class Day extends React.Component {
     day: PropTypes.object.isRequired,
     updateReminder: PropTypes.func.isRequired,
     deleteReminder: PropTypes.func.isRequired,
-    deleteAllReminders: PropTypes.func.isRequired
+    deleteAllReminders: PropTypes.func.isRequired,
+    weatherConditions: PropTypes.object.isRequired,
+    getWeather: PropTypes.func.isRequired
   }
 
   static defaultProps = {
@@ -106,7 +109,11 @@ class Day extends React.Component {
   }
 
   updateReminderFn = (newday, reminder) => {
-    const { updateReminder, day } = this.props
+    const { updateReminder, day, weatherConditions, getWeather } = this.props
+
+    if (reminder.zipCode && !weatherConditions[reminder.zipCode]) {
+      getWeather(reminder.zipCode)
+    }
 
     updateReminder(newday, day.index, reminder)
     this.handleCloseModal()
@@ -126,10 +133,33 @@ class Day extends React.Component {
     this.handleCloseModal()
   }
 
-  renderReminders = (reminders) => {
+  getIcon = (zipCode, hour) => {
+    const { weatherConditions, day } = this.props
+    const today = moment()
+    const dayMom = moment().hour(hour).date(day.number)
+    const diffDay = dayMom.diff(today, 'days')
+    let icon = ''
+
+    if (diffDay >= 0 && diffDay <= 5 && weatherConditions[zipCode]) {
+      weatherConditions[zipCode].some(data => {
+        if (dayMom.diff(moment(data.dt)) >= 0) {
+          icon = data.icon
+          return true
+        }
+
+        return false
+      })
+    }
+
+    return icon
+  }
+
+  renderReminders = reminders => {
     return reminders.map(reminder => {
       const onClick = () => this.handleOpenModal(reminder)
-      return <Reminder key={reminder.id} reminder={reminder} onClick={onClick}/>
+      const icon = this.getIcon(reminder.zipCode, reminder.hour)
+
+      return <Reminder key={reminder.id} reminder={reminder} onClick={onClick} icon={icon}/>
     })
   }
 

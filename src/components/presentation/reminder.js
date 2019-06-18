@@ -24,6 +24,10 @@ const Wrapper = styled.li`
   color: ${({ color }) => getColor(color)};
   margin-bottom: 3px;
   border: ${({ color }) => getBorder(color)};
+
+  &:hover {
+    cursor: pointer;
+  }
 `
 const WrapperText = styled.p`
   margin: 0;
@@ -32,6 +36,9 @@ const WrapperText = styled.p`
 `
 const FirstLine = styled(WrapperText)`
   font-weight: bold;
+`
+const Weather = styled.img`
+  float: right;
 `
 const formatTime = value => {
   const valueNmb = parseInt(value, 10)
@@ -43,10 +50,11 @@ const formatTime = value => {
   return value
 }
 
-const Reminder = ({ reminder, ...rest }) => {
+const Reminder = ({ reminder, icon, ...rest }) => {
   const { text, hour, minute, city, color } = reminder
   return (
     <Wrapper color={color} {...rest}>
+      {icon && <Weather src={`http://openweathermap.org/img/w/${icon}.png`} alt="time" height="42" width="42" />}
       <FirstLine>{text}</FirstLine>
       <WrapperText>{formatTime(hour)}:{formatTime(minute)} - {city}</WrapperText>
     </Wrapper>
@@ -54,7 +62,12 @@ const Reminder = ({ reminder, ...rest }) => {
 }
 
 Reminder.propTypes = {
-  reminder: PropTypes.object.isRequired
+  reminder: PropTypes.object.isRequired,
+  icon: PropTypes.string
+}
+
+Reminder.defaultProps = {
+  icon: ''
 }
 
 export {

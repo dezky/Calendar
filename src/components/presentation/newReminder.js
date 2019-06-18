@@ -26,7 +26,7 @@ const RowButton = styled(Row)`
 const Label = styled.label`
   margin-right: 5px;
   display: inline-block;
-  width: 65px;
+  width: 100px;
 `
 const Input = styled.input`
   border: 1px solid #B3A2A2;
@@ -79,7 +79,7 @@ class NewReminderComponent extends React.Component {
   constructor(props) {
     super(props)
 
-    const { hour, minute, text, city, color, id } = props.reminder
+    const { hour, minute, text, city, zipCode, color, id } = props.reminder
     this.state = {
       day: props.day,
       id: id ? id : 0,
@@ -87,6 +87,7 @@ class NewReminderComponent extends React.Component {
       minute: minute ? minute : 0,
       text: text ? text : '',
       city: city ? city : '',
+      zipCode: zipCode ? zipCode : '',
       color: color ? color : '',
       error: {
         day: false,
@@ -151,6 +152,10 @@ class NewReminderComponent extends React.Component {
     this.setState({ city: evt.target.value })
   }
 
+  onChangeZipCode = evt => {
+    this.setState({ zipCode: evt.target.value })
+  }
+
   onChangeColor = color => {
     this.setState({ color: color.hex })
   }
@@ -174,7 +179,7 @@ class NewReminderComponent extends React.Component {
 
   render() {
     const { cancelCallback, reminder } = this.props
-    const { day, hour, minute, text, city, color, error } = this.state
+    const { day, hour, minute, text, city, color, zipCode, error } = this.state
     const title = reminder.id > 0 ? 'Edit reminder' : 'New Reminder'
     const showDeleteButton = reminder.id > 0
 
@@ -196,12 +201,16 @@ class NewReminderComponent extends React.Component {
         </Row>
         <RowExpanded>
           <Label htmlFor='text'>Text:</Label>
-          <Input id='text' type='text' value={text} onChange={ this.onChangeText } maxLength={30} style={{ flexGrow: 2}}/>
+          <Input id='text' type='text' value={text} onChange={ this.onChangeText } maxLength={30} style={{ flexGrow: 1}}/>
           <Error show={error.text}>Max lenght 30 chars</Error>
         </RowExpanded>
         <RowExpanded>
           <Label htmlFor='city'>City:</Label>
-          <Input id='city' type='text' value={city} onChange={ this.onChangeCity } style={{ flexGrow: 2}}/>
+          <Input id='city' type='text' value={city} onChange={ this.onChangeCity } style={{ flexGrow: 1}}/>
+        </RowExpanded>
+        <RowExpanded>
+          <Label htmlFor='zipCode'>ZIP code:</Label>
+          <Input id= 'zipCode' type='text' value={zipCode} onChange={ this.onChangeZipCode } style={{ flexGrow: 1}}/>
         </RowExpanded>
         <Row style={{textAlign: 'center'}}>
           <CompactPicker

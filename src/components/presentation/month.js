@@ -68,7 +68,10 @@ Modal.setAppElement('#root')
 
 class Month extends React.Component {
   static propTypes = {
-    month: PropTypes.object.isRequired
+    month: PropTypes.object.isRequired,
+    addReminder: PropTypes.func.isRequired,
+    getWeather: PropTypes.func.isRequired,
+    weatherConditions: PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -88,7 +91,11 @@ class Month extends React.Component {
   }
 
   addReminderFn = (day, reminder) => {
-    const { addReminder } = this.props
+    const { addReminder, weatherConditions, getWeather } = this.props
+
+    if (reminder.zipCode && !weatherConditions[reminder.zipCode]) {
+      getWeather(reminder.zipCode)
+    }
 
     addReminder(day, reminder)
     this.handleCloseModal()
@@ -141,12 +148,6 @@ class Month extends React.Component {
       </Wrapper>
     )
   }
-}
-
-
-Month.propTypes = {
-  month: PropTypes.object.isRequired,
-  addReminder: PropTypes.func.isRequired
 }
 
 export {

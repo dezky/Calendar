@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux'
 import { month } from './month'
+import { weather } from './weather'
 
 const rootReducer = combineReducers({
-  month
+  month,
+  weather
 })
 
 export {
