@@ -67,20 +67,29 @@ const deleteAllReminders = (state, action) => {
 }
 
 const compareReminder = (rem1, rem2) => {
-  if (rem1.hour < rem2.hour) {
+  const hour1 = parseInt(rem1.hour, 10)
+  const hour2 = parseInt(rem2.hour, 10)
+  const minute1 = parseInt(rem1.minute, 10)
+  const minute2 = parseInt(rem2.minute, 10)
+
+  if (hour1 < hour2) {
+    console.log("return -1")
     return -1
   }
-  if (rem2.hour < rem1.hour) {
+  if (hour2 < hour1) {
+    console.log("return 1")
     return 1
   }
-  if (rem1.hour === rem2.hour) {
-    if (rem1.minute < rem2.minute) {
+  if (hour1 === hour2) {
+    if (minute1 < minute2) {
+      console.log("return -1")
       return -1
-    } else if (rem2.minute < rem1.minute) {
+    } else if (minute2 < minute1) {
+      console.log("return 1")
       return 1
     }
   }
-
+  console.log("return 0")
 
   return 0;
 }
