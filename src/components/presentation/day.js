@@ -1,13 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import Modal from 'react-modal'
 import moment from 'moment'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 
 import { Reminder } from './reminder'
 import { NewReminderComponent } from './newReminder'
+import { Confirm } from './confirm'
+import { ModalComp } from './modal'
 
 
 const getBackgroundColor = dayOfWeek => {
@@ -63,18 +64,6 @@ const TrashButton = styled(FontAwesomeIcon)`
     cursor: pointer;
   }
 `
-const customStyles = {
-  content : {
-    top                   : '50%',
-    left                  : '50%',
-    right                 : 'auto',
-    bottom                : 'auto',
-    marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)'
-  }
-}
-
-Modal.setAppElement('#root')
 
 class Day extends React.Component {
   static propTypes = {
@@ -96,23 +85,29 @@ class Day extends React.Component {
 
     this.state = {
       showNewReminder: false,
+      showConfirm: false,
       selectedReminder: {}
     }
   }
 
-  handleOpenModal = reminder => {
+  handleOpenReminderModal = reminder => {
     this.setState({ selectedReminder: reminder, showNewReminder: true });
   }
 
+  handleOpenConfirmModal = reminder => {
+    this.setState({ showConfirm: true });
+  }
+
   handleCloseModal = () => {
-    this.setState({ showNewReminder: false, selectedReminder: {} });
+    this.setState({ showNewReminder: false, showConfirm: false, selectedReminder: {} });
   }
 
   updateReminderFn = (newday, reminder) => {
     const { updateReminder, day, weatherConditions, getWeather } = this.props
+    const key = `${reminder.city}${reminder.country}`
 
-    if (reminder.zipCode && !weatherConditions[reminder.zipCode]) {
-      getWeather(reminder.zipCode)
+    if (reminder.city && !weatherConditions[key]) {
+      getWeather(reminder.city, reminder.country )
     }
 
     updateReminder(newday, day.index, reminder)
@@ -133,15 +128,16 @@ class Day extends React.Component {
     this.handleCloseModal()
   }
 
-  getIcon = (zipCode, hour) => {
+  getIcon = (country, city, hour) => {
     const { weatherConditions, day } = this.props
     const today = moment()
     const dayMom = moment().hour(hour).date(day.number)
     const diffDay = dayMom.diff(today, 'days')
+    const key = `${city}${country}`
     let icon = ''
 
-    if (diffDay >= 0 && diffDay <= 5 && weatherConditions[zipCode]) {
-      weatherConditions[zipCode].some(data => {
+    if (diffDay >= 0 && diffDay <= 5 && weatherConditions[key]) {
+      weatherConditions[key].some(data => {
         if (dayMom.diff(moment(data.dt)) >= 0) {
           icon = data.icon
           return true
@@ -156,8 +152,8 @@ class Day extends React.Component {
 
   renderReminders = reminders => {
     return reminders.map(reminder => {
-      const onClick = () => this.handleOpenModal(reminder)
-      const icon = this.getIcon(reminder.zipCode, reminder.hour)
+      const onClick = () => this.handleOpenReminderModal(reminder)
+      const icon = this.getIcon(reminder.country, reminder.city, reminder.hour)
 
       return <Reminder key={reminder.id} reminder={reminder} onClick={onClick} icon={icon}/>
     })
@@ -174,19 +170,23 @@ class Day extends React.Component {
       reminder: selectedReminder,
       deleteCallback: this.deleteReminderFn
     }
+    const confirmProps = {
+      message: 'Are you sure to delete the list of reminders?',
+      cancelCallback: this.handleCloseModal,
+      okCallback: this.deleteAllRemindersFn
+    }
 
     return (
       <Wrapper dayOfWeek={dayOfWeek} firstRow={firstRow}>
-        {reminders.length > 0 && <TrashButton icon={faTrashAlt} onClick={this.deleteAllRemindersFn} />}
+        {reminders.length > 0 && <TrashButton icon={faTrashAlt} onClick={this.handleOpenConfirmModal} />}
         <Number>{number}</Number>
         <WrapperReminders>{this.renderReminders(reminders)}</WrapperReminders>
-        <Modal
-          isOpen={this.state.showNewReminder}
-          style={customStyles}
-          contentLabel="Example Modal"
-        >
+        <ModalComp isOpen={this.state.showNewReminder}>
           <NewReminderComponent {...reminderProps} />
-        </Modal>
+        </ModalComp>
+        <ModalComp isOpen={this.state.showConfirm}>
+          <Confirm {...confirmProps} />
+        </ModalComp>
       </Wrapper>
     )
   }

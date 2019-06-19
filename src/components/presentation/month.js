@@ -2,10 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { chunk } from 'lodash'
-import Modal from 'react-modal'
 
 import { Day } from 'components/containers'
 import { NewReminderComponent } from './newReminder'
+import { ModalComp } from './modal'
 
 const getBorderLeftHeader = position => {
   if (position === 0) {
@@ -53,18 +53,6 @@ const Button = styled.button`
     cursor: pointer;
   }
 `
-const customStyles = {
-  content : {
-    top                   : '50%',
-    left                  : '50%',
-    right                 : 'auto',
-    bottom                : 'auto',
-    marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)'
-  }
-}
-
-Modal.setAppElement('#root')
 
 class Month extends React.Component {
   static propTypes = {
@@ -92,9 +80,10 @@ class Month extends React.Component {
 
   addReminderFn = (day, reminder) => {
     const { addReminder, weatherConditions, getWeather } = this.props
+    const key = `${reminder.city}${reminder.country}`
 
-    if (reminder.zipCode && !weatherConditions[reminder.zipCode]) {
-      getWeather(reminder.zipCode)
+    if (reminder.city && !weatherConditions[key]) {
+      getWeather(reminder.city, reminder.country)
     }
 
     addReminder(day, reminder)
@@ -136,13 +125,9 @@ class Month extends React.Component {
       <Wrapper>
         <h1>{name}</h1>
         <Button onClick={this.handleOpenModal}>New reminder</Button>
-        <Modal
-          isOpen={this.state.showNewReminder}
-          style={customStyles}
-          contentLabel="Example Modal"
-        >
+        <ModalComp isOpen={this.state.showNewReminder}>
           <NewReminderComponent {...reminderProps} />
-        </Modal>
+        </ModalComp>
         <Row>{this.renderHeader()}</Row>
         {this.renderDays(days)}
       </Wrapper>

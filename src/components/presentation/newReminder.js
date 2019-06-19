@@ -3,6 +3,9 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { CompactPicker } from 'react-color'
 
+import { ModalComp } from './modal'
+import { Confirm } from './confirm'
+
 const Wrapper = styled.div`
   min-width: 380px;
   .flexbox-fix {
@@ -35,6 +38,11 @@ const Input = styled.input`
   font-size: 1.2rem;
   outline: none;
 `
+const Error = styled.p`
+  color: #dc3545;
+  font-size: 0.8rem;
+  display: ${({ show }) => show ? 'block' : 'none'}
+`
 const Button = styled.button`
   border-radius: 5px;
   padding: 10px 5px;
@@ -46,6 +54,13 @@ const Button = styled.button`
   width: 90px;
   font-size: 1.3rem;
   margin: 5px;
+
+  &:disabled {
+    opacity: 0.5;
+    &:hover {
+      cursor: not-allowed;
+    }
+  }
 
   &:hover {
     cursor: pointer;
@@ -66,7 +81,7 @@ class NewReminderComponent extends React.Component {
   }
 
   static defaultProps = {
-    day: 0,
+    day: 1,
     reminder: {},
     deleteCallback: () => {}
   }
@@ -74,7 +89,7 @@ class NewReminderComponent extends React.Component {
   constructor(props) {
     super(props)
 
-    const { hour, minute, text, city, zipCode, color, id } = props.reminder
+    const { hour, minute, text, city, color, id, country } = props.reminder
     this.state = {
       day: props.day,
       id: id ? id : 0,
@@ -82,33 +97,90 @@ class NewReminderComponent extends React.Component {
       minute: minute ? minute : 0,
       text: text ? text : '',
       city: city ? city : '',
-      zipCode: zipCode ? zipCode : '',
-      color: color ? color : ''
+      color: color ? color : '',
+      country: country ? country : '',
+      error: {
+        day: props.day < 1 || props.day > 31 ? true : false,
+        hour: false,
+        minute: false,
+        text: false,
+      },
+      touched: {
+        day: false,
+        hour: false,
+        minute: false,
+        text: false,
+      },
+      showConfirmModal: false
     }
   }
 
+  handleOpenConfirmModal = reminder => {
+    this.setState({ showConfirmModal: true });
+  }
+
+  handleCloseConfirmModal = () => {
+    this.setState({ showConfirmModal: false });
+  }
+
+  onFocusDay = () => {
+    const { touched } = this.state
+
+    touched.day = true;
+    this.setState({ touched })
+  }
+
+  onFocusHour = () => {
+    const { touched } = this.state
+
+    touched.hour = true;
+    this.setState({ touched })
+  }
+
+  onFocusMinute = () => {
+    const { touched } = this.state
+
+    touched.minute = true;
+    this.setState({ touched })
+  }
+
+  onFocusText = () => {
+    const { touched } = this.state
+
+    touched.text = true;
+    this.setState({ touched })
+  }
+
   onChangeDay = evt => {
-    this.setState({day : evt.target.value })
+    this.setState({day : evt.target.value }, () => {
+      this.checkErrors()
+    })
   }
 
   onChangeHour = evt => {
-    this.setState({ hour: evt.target.value })
+    this.setState({ hour: evt.target.value }, () => {
+      this.checkErrors()
+    })
   }
 
   onChangeMinute = evt => {
-    this.setState({ minute: evt.target.value })
+    this.setState({ minute: evt.target.value }, () => {
+      this.checkErrors()
+    })
   }
 
   onChangeText = evt => {
-    this.setState({ text: evt.target.value })
+    this.setState({ text: evt.target.value }, () => {
+      this.checkErrors()
+    })
   }
 
   onChangeCity = evt => {
     this.setState({ city: evt.target.value })
   }
 
-  onChangeZipCode = evt => {
-    this.setState({ zipCode: evt.target.value })
+  onChangeCountry = evt => {
+    this.setState({ country: evt.target.value })
   }
 
   onChangeColor = color => {
@@ -117,51 +189,82 @@ class NewReminderComponent extends React.Component {
 
   onClickOkButton = () => {
     const { okCallback } = this.props
-    const { day, ...reminder } = this.state
+    const { day, error, touched, ...reminder } = this.state
 
     if (reminder.id === 0) {
       reminder.id = Date.now()
     }
 
+    if (!reminder.country) {
+      reminder.country = 'US'
+    }
+
     okCallback(parseInt(day, 10), reminder)
   }
 
-  onClickDeleteButton = () => {
+  deleteReminder = () => {
     const { deleteCallback } = this.props
 
     deleteCallback(this.state.id)
+    this.handleCloseConfirmModal()
+  }
+
+  checkErrors = () => {
+    const { day, hour, minute, text, error } = this.state
+
+    error.day = day > 31 || day < 1
+    error.hour = hour > 23 || hour < 0
+    error.minute = minute > 59 || minute < 0
+    error.text = text.length > 30
+
+    this.setState({ error })
+  }
+
+  hasErrors = () => {
+    const { day, hour, minute, text } = this.state.error
+
+    return day || hour || minute || text
   }
 
   render() {
     const { cancelCallback, reminder } = this.props
-    const { day, hour, minute, text, city, color, zipCode } = this.state
+    const { day, hour, minute, text, city, color, country, showConfirmModal, error, touched } = this.state
     const title = reminder.id > 0 ? 'Edit reminder' : 'New Reminder'
     const showDeleteButton = reminder.id > 0
+    const confirmProps = {
+      message: 'Are you sure to delete the reminder?',
+      okCallback: this.deleteReminder,
+      cancelCallback: this.handleCloseConfirmModal
+    }
 
     return (
       <Wrapper>
         <Title>{title}</Title>
         <Row>
           <Label htmlFor='day'>Day:</Label>
-          <Input id= 'day' type='number' value={day} onChange={ this.onChangeDay } min={1} max={31}/>
+          <Input id= 'day' type='number' value={day} onChange={ this.onChangeDay } onFocus={this.onFocusDay} min={1} max={31}/>
+          <Error show={error.day && touched.day}>Day should be between 1 and 31</Error>
         </Row>
         <Row>
           <Label htmlFor='hour'>Time:</Label>
-          <Input id='hour' type='number' value={hour} onChange={ this.onChangeHour } min={0} max={23}/>
+          <Input id='hour' type='number' value={hour} onChange={ this.onChangeHour } onFocus={this.onFocusHour} min={0} max={23}/>
           <span> : </span>
-          <Input type='number' value={minute} onChange={ this.onChangeMinute } min={0} max={59}/>
+          <Input type='number' value={minute} onChange={ this.onChangeMinute } onFocus={this.onFocusMinute} min={0} max={59}/>
+          <Error show={error.hour && touched.hour}>Incorrect hour</Error>
+          <Error show={error.minute && touched.minute}>Incorrect minute</Error>
         </Row>
         <RowExpanded>
           <Label htmlFor='text'>Text:</Label>
-          <Input id='text' type='text' value={text} onChange={ this.onChangeText } maxLength={30} style={{ flexGrow: 1}}/>
+          <Input id='text' type='text' value={text} onChange={ this.onChangeText } onFocus={this.onFocusText} maxLength={30} style={{ flexGrow: 1}}/>
+          <Error show={error.text && touched.text}>Incorrect text, should be less than 30 chars</Error>
         </RowExpanded>
         <RowExpanded>
           <Label htmlFor='city'>City:</Label>
           <Input id='city' type='text' value={city} onChange={ this.onChangeCity } style={{ flexGrow: 1}}/>
         </RowExpanded>
         <RowExpanded>
-          <Label htmlFor='zipCode'>ZIP code:</Label>
-          <Input id= 'zipCode' type='text' value={zipCode} onChange={ this.onChangeZipCode } style={{ flexGrow: 1}}/>
+          <Label htmlFor='country'>Country:</Label>
+          <Input id= 'country' type='text' value={country} onChange={ this.onChangeCountry } style={{ flexGrow: 1}} placeholder='Ex. US'/>
         </RowExpanded>
         <Row style={{textAlign: 'center'}}>
           <CompactPicker
@@ -169,9 +272,10 @@ class NewReminderComponent extends React.Component {
             onChangeComplete={ this.onChangeColor }
           />
         </Row>
+        <ModalComp isOpen={showConfirmModal}><Confirm {...confirmProps} /></ModalComp>
         <RowButton>
-          <Button onClick={this.onClickOkButton}>Save</Button>
-          { showDeleteButton && <DeleteButton onClick={this.onClickDeleteButton}>Delete</DeleteButton>}
+          <Button onClick={this.onClickOkButton} disabled={this.hasErrors()}>Save</Button>
+          { showDeleteButton && <DeleteButton onClick={this.handleOpenConfirmModal}>Delete</DeleteButton>}
           <Button onClick={cancelCallback}>Cancel</Button>
         </RowButton>
       </Wrapper>

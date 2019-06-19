@@ -4,10 +4,11 @@ import defaultState from './defaultState'
 const weather = (state = defaultState.weather, action) => {
   switch(action.type) {
     case GET_WEATHER: {
-      const { data, zipCode } = action.payload
+      const { data, city, country } = action.payload
       const conditions = getWeatherCondition(data.list)
+      const key = `${city}${country}`
 
-      return {...state, [zipCode]: conditions}
+      return {...state, [key]: conditions}
     }
     default:
       return state
